@@ -56,6 +56,12 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
 
+      # `changeset publish` creates one tag per published package on the runner
+      # and pushes nothing (run 36629907222 published 0.2.0 x4 and left the tags
+      # local). Push them so releases are findable; `contents: write` allows it.
+      - name: Push release tags
+        run: git push origin --tags
+
       - name: Summary
         run: |
           echo "## alternate-auth-sdk publish" >> $GITHUB_STEP_SUMMARY
