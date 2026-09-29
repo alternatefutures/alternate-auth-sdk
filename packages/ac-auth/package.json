@@ -1,6 +1,6 @@
 {
   "name": "@alternatefutures/ac-auth",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Sign in with Alternate Clouds, framework-free: OpenID Connect discovery, PKCE, token exchange, single-flight refresh with rotation, a JWKS cache that survives issuer outages, session grace, typed claims and the device flow.",
   "license": "MIT",
   "type": "module",

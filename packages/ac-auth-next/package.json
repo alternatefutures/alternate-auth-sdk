@@ -1,6 +1,6 @@
 {
   "name": "@alternatefutures/ac-auth-next",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Sign in with Alternate Clouds for Next.js 16 (App Router): a server-side session in an encrypted httpOnly cookie, refresh in the proxy only, an auth() helper for Server Components and Route Handlers, the sign-in, callback and sign-out route handlers, and a client provider for the React components.",
   "license": "MIT",
   "type": "module",
@@ -51,8 +51,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@alternatefutures/ac-auth": "^0.1.0",
-    "@alternatefutures/ac-auth-react": "^0.1.0",
+    "@alternatefutures/ac-auth": "^0.2.0",
+    "@alternatefutures/ac-auth-react": "^0.2.0",
     "jose": "^6.2.12"
   },
   "peerDependencies": {

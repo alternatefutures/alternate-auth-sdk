@@ -1,6 +1,6 @@
 {
   "name": "@alternatefutures/ac-auth-js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Auth.js (next-auth v5, @auth/core) provider for Sign in with Alternate Clouds.",
   "license": "MIT",
   "type": "module",
@@ -31,7 +31,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@alternatefutures/ac-auth": "^0.1.0"
+    "@alternatefutures/ac-auth": "^0.2.0"
   },
   "peerDependencies": {
     "@auth/core": ">=0.37.0"

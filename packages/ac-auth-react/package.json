@@ -1,6 +1,6 @@
 {
   "name": "@alternatefutures/ac-auth-react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React components and hooks for Sign in with Alternate Clouds: AuthProvider, SignIn, SignInButton, UserButton, SignedIn, SignedOut, useUser, useSession, useOrganization. The same shadcn primitives, palette and typography as the Alternate Clouds web app.",
   "license": "MIT",
   "type": "module",
@@ -35,7 +35,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@alternatefutures/ac-auth": "^0.1.0",
+    "@alternatefutures/ac-auth": "^0.2.0",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-slot": "^1.2.3",
