@@ -256,6 +256,8 @@ describe.skipIf(!configured)('live issuer', () => {
       expect(session.tokens.refreshToken).toBeTruthy();
       expect(session.tokens.idToken).toBeTruthy();
       expect(decodeProtectedHeader(session.tokens.idToken!).alg).toBe('EdDSA');
+      // Operational check after a key rotation: which published key signed this token.
+      if (process.env.AUTH_SDK_LOG_KID) console.info(`[integration] id_token kid=${decodeProtectedHeader(session.tokens.idToken!).kid}`);
       // opaque access token (no audience): good for userinfo only
       expect(session.tokens.accessToken.split('.')).toHaveLength(1);
       // the callback cannot be replayed
