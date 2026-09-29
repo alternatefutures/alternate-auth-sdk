@@ -1,0 +1,58 @@
+name: 📦 Publish to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Publish packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # changeset publish creates and pushes the release tags
+      id-token: write # required for npm provenance
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Snapshot the issuer's current public keys into @alternatefutures/ac-auth so a
+      # build that ships today can still verify tokens if the JWKS URL is
+      # unreachable later (the auth plan, resilience "cheap first"). Best effort:
+      # an unreachable issuer keeps the committed snapshot.
+      - name: Embed last-known issuer keys
+        run: npm run embed-keys
+        continue-on-error: true
+
+      - name: Build all packages
+        run: npm run build --workspaces --if-present
+
+      - name: Typecheck
+        run: npm run typecheck --workspaces --if-present
+
+      - name: Test
+        run: npm test --workspaces --if-present
+
+      - name: Publish changed packages (with provenance)
+        run: npx changeset publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+
+      - name: Summary
+        run: |
+          echo "## alternate-auth-sdk publish" >> $GITHUB_STEP_SUMMARY
+          echo "Ran \`changeset publish\` (publishes any package whose version is not yet on npm)." >> $GITHUB_STEP_SUMMARY
+          echo "**Provenance:** enabled" >> $GITHUB_STEP_SUMMARY

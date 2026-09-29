@@ -1,0 +1,51 @@
+{
+  "name": "@alternatefutures/ac-auth-js",
+  "version": "0.1.0",
+  "description": "Auth.js (next-auth v5, @auth/core) provider for Sign in with Alternate Clouds.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@alternatefutures/ac-auth": "^0.1.0"
+  },
+  "peerDependencies": {
+    "@auth/core": ">=0.37.0"
+  },
+  "devDependencies": {
+    "@auth/core": "^0.41.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alternatefutures/alternate-auth-sdk.git",
+    "directory": "packages/ac-auth-js"
+  }
+}
