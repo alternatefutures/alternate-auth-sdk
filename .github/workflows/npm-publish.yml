@@ -45,6 +45,11 @@ jobs:
       - name: Test
         run: npm test --workspaces --if-present
 
+      # `changeset publish` runs the packages' `npm publish` concurrently. Each
+      # package's prepublishOnly only checks that dist exists: a rebuild there
+      # (tsup clean: true) wiped ac-auth/dist while ac-auth-next's d.ts build
+      # was reading it (run 36628232697, 2026-09-29: TS7016 in core.ts). The
+      # build step above already built every package in dependency order.
       - name: Publish changed packages (with provenance)
         run: npx changeset publish
         env:

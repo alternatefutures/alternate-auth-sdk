@@ -48,7 +48,7 @@
     "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "node ../../scripts/check-dist.mjs"
   },
   "dependencies": {
     "@alternatefutures/ac-auth": "^0.2.0",

@@ -29,7 +29,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude 'test/integration/**'",
     "test:integration": "vitest run test/integration",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "node ../../scripts/check-dist.mjs"
   },
   "dependencies": {
     "jose": "^6.2.12"

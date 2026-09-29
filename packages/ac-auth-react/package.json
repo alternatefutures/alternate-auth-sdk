@@ -32,7 +32,7 @@
     "build:css": "node scripts/build-css.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "node ../../scripts/check-dist.mjs"
   },
   "dependencies": {
     "@alternatefutures/ac-auth": "^0.2.0",
