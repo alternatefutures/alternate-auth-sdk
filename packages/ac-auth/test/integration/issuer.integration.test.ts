@@ -11,6 +11,12 @@
  *   AUTH_SDK_ISSUER=http://localhost:1621 \
  *   AUTH_SDK_INTROSPECTION_SECRET=<AUTH_INTROSPECTION_SECRET of that service> \
  *   AUTH_SDK_USER_ID=<a local user id> AUTH_SDK_ORG_ID=<an org that user administers> \
+ *
+ * Against a deployed issuer (staging), where the introspection secret must not
+ * leave the cluster, pass a pre-minted bearer instead of the secret + user id:
+ *   AUTH_SDK_ISSUER=https://auth.staging.alternatefutures.ai \
+ *   AUTH_SDK_BEARER=<a PAT or session token of an org admin> AUTH_SDK_ORG_ID=<that org> \
+ * The suite then mints nothing and deletes only the clients it created.
  *   npm run test:integration
  *
  * Skipped (visibly) when those variables are absent. The test mints a
@@ -32,15 +38,18 @@ import { verifyIdToken } from '../../src/verify';
 
 const ISSUER = (process.env.AUTH_SDK_ISSUER ?? '').replace(/\/+$/, '');
 const SECRET = process.env.AUTH_SDK_INTROSPECTION_SECRET ?? '';
-const USER_ID = process.env.AUTH_SDK_USER_ID ?? '';
+/** Resolved from /auth/me in bearer mode (see beforeAll). */
+let USER_ID = process.env.AUTH_SDK_USER_ID ?? '';
 const ORG_ID = process.env.AUTH_SDK_ORG_ID ?? '';
-const configured = Boolean(ISSUER && SECRET && USER_ID && ORG_ID);
+/** Pre-minted bearer (deployed issuers): replaces the secret + user id and is never deleted by the suite. */
+const BEARER = process.env.AUTH_SDK_BEARER ?? '';
+const configured = Boolean(ISSUER && ORG_ID && (BEARER || (SECRET && USER_ID)));
 const REDIRECT_URI = 'http://localhost:9999/callback';
 const POST_LOGOUT_URI = 'http://localhost:9999/';
 
 if (!configured) {
   // eslint-disable-next-line no-console
-  console.warn('[integration] AUTH_SDK_ISSUER / AUTH_SDK_INTROSPECTION_SECRET / AUTH_SDK_USER_ID / AUTH_SDK_ORG_ID not set: live issuer tests skipped');
+  console.warn('[integration] AUTH_SDK_ISSUER + AUTH_SDK_ORG_ID + (AUTH_SDK_BEARER | AUTH_SDK_INTROSPECTION_SECRET + AUTH_SDK_USER_ID) not set: live issuer tests skipped');
 }
 
 /** A cookie jar for the "browser" leg. Paths are ignored on purpose (one host). */
@@ -129,14 +138,23 @@ describe.skipIf(!configured)('live issuer', () => {
   let metadata: IssuerMetadata;
 
   beforeAll(async () => {
-    const minted = await api('/tokens/internal/create', {
-      method: 'POST',
-      headers: { 'x-af-introspection-secret': SECRET },
-      body: JSON.stringify({ userId: USER_ID, organizationId: ORG_ID, name: `auth-sdk-integration ${Date.now()}` }),
-    });
-    expect(minted.status, JSON.stringify(minted.body)).toBe(201);
-    bearer = minted.body.token;
-    patId = minted.body.id;
+    if (BEARER) {
+      bearer = BEARER;
+      if (!USER_ID) {
+        const me = await api('/auth/me', { token: bearer });
+        expect(me.status, JSON.stringify(me.body)).toBe(200);
+        USER_ID = me.body.user.id as string;
+      }
+    } else {
+      const minted = await api('/tokens/internal/create', {
+        method: 'POST',
+        headers: { 'x-af-introspection-secret': SECRET },
+        body: JSON.stringify({ userId: USER_ID, organizationId: ORG_ID, name: `auth-sdk-integration ${Date.now()}` }),
+      });
+      expect(minted.status, JSON.stringify(minted.body)).toBe(201);
+      bearer = minted.body.token;
+      patId = minted.body.id;
+    }
 
     const pub = await api('/developer/clients', {
       method: 'POST',
