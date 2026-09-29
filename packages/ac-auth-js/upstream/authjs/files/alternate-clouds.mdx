@@ -1,0 +1,121 @@
+import { Callout } from "nextra/components"
+import { Code } from "@/components/Code"
+
+<img align="right" src="/img/providers/alternate-clouds.svg" width="64" height="64" />
+
+# Alternate Clouds Provider
+
+## Resources
+
+- [Add sign in with Alternate Clouds](https://docs.alternatefutures.ai/guides/add-sign-in)
+- [Sign in with Alternate Clouds and Auth.js](https://docs.alternatefutures.ai/guides/sign-in-with-authjs)
+
+## Setup
+
+### Callback URL
+
+<Code>
+  <Code.Next>
+
+```bash
+https://example.com/api/auth/callback/alternate-clouds
+```
+
+  </Code.Next>
+  <Code.Qwik>
+
+```bash
+https://example.com/auth/callback/alternate-clouds
+```
+
+  </Code.Qwik>
+  <Code.Svelte>
+
+```bash
+https://example.com/auth/callback/alternate-clouds
+```
+
+  </Code.Svelte>
+</Code>
+
+### Environment Variables
+
+```
+AUTH_ALTERNATE_CLOUDS_ID
+AUTH_ALTERNATE_CLOUDS_SECRET   # confidential clients only
+AUTH_ALTERNATE_CLOUDS_ISSUER   # optional, default https://auth.alternatefutures.ai
+```
+
+### Configuration
+
+1. Sign in to the [Alternate Clouds web app](https://clouds.alternatefutures.ai) and open **Organization › Developer**.
+2. Create an app: **public** (PKCE, no secret) for browser and serverless apps, or **confidential** to get a client secret.
+3. Add the **redirect URI** `http://localhost:3000/api/auth/callback/alternate-clouds` (development) and `https://{YOUR_DOMAIN}/api/auth/callback/alternate-clouds` (production).
+4. Copy the client id (and the secret, shown once) into your environment variables.
+
+<Callout>
+  A public client needs only `AUTH_ALTERNATE_CLOUDS_ID`. Setting
+  `AUTH_ALTERNATE_CLOUDS_SECRET` switches token requests to
+  `client_secret_basic`; the issuer refuses a secret for a public client.
+</Callout>
+
+<Code>
+  <Code.Next>
+
+```ts filename="/auth.ts"
+import NextAuth from "next-auth"
+import AlternateClouds from "next-auth/providers/alternate-clouds"
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  providers: [AlternateClouds],
+})
+```
+
+  </Code.Next>
+  <Code.Qwik>
+
+```ts filename="/src/routes/plugin@auth.ts"
+import { QwikAuth$ } from "@auth/qwik"
+import AlternateClouds from "@auth/qwik/providers/alternate-clouds"
+
+export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
+  () => ({
+    providers: [AlternateClouds],
+  })
+)
+```
+
+  </Code.Qwik>
+  <Code.Svelte>
+
+```ts filename="/src/auth.ts"
+import { SvelteKitAuth } from "@auth/sveltekit"
+import AlternateClouds from "@auth/sveltekit/providers/alternate-clouds"
+
+export const { handle, signIn, signOut } = SvelteKitAuth({
+  providers: [AlternateClouds],
+})
+```
+
+  </Code.Svelte>
+  <Code.Express>
+
+```ts filename="/src/app.ts"
+import { ExpressAuth } from "@auth/express"
+import AlternateClouds from "@auth/express/providers/alternate-clouds"
+
+app.use("/auth/*", ExpressAuth({ providers: [AlternateClouds] }))
+```
+
+  </Code.Express>
+</Code>
+
+### Scopes
+
+The default scope is `openid profile email`. Add `wallet` to receive the
+user's verified wallet addresses (`did:pkh:eip155:1:<address>`) and `org` to
+receive the organization picked at consent:
+
+```ts
+AlternateClouds({ authorization: { params: { scope: "openid profile email wallet org" } } })
+```
